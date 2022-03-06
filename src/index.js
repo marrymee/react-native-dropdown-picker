@@ -4,9 +4,9 @@ import {
     Text,
     View,
     TouchableOpacity,
-    ScrollView,
     Platform,
-    TextInput
+    TextInput,
+    FlatList
 } from 'react-native';
 
 // Icon
@@ -374,7 +374,6 @@ class DropDownPicker extends React.Component {
         const opacity = disabled ? 0.5 : 1;
         const items = this.getItems();
         const dropdownItems = items.filter(item => typeof item.hidden === 'undefined' || item.hidden === false);
-
         return (
             <View style={[this.props.containerStyle, {
 
@@ -460,15 +459,15 @@ class DropDownPicker extends React.Component {
                         </View>
                       )
                     }
-
-                    <ScrollView
+                     <FlatList
                         style={{width: '100%'}}
                         nestedScrollEnabled={true}
                         ref={ref => {
                             this.scrollViewRef = ref;
                         }}
-                        {...scrollViewProps}>
-                        {dropdownItems.length > 0 ? dropdownItems.map((item, index) => (
+                        keyExtractor={(item,i) => i}
+                        {...scrollViewProps}
+                        renderItem={dropdownItems.length > 0 ?({item, index}) => (
                             <View
                                 key={index}
                                 onLayout={event => {
@@ -525,12 +524,13 @@ class DropDownPicker extends React.Component {
                                 </TouchableOpacity>
                                 {renderSeperator && index !== items.length - 1 && renderSeperator()}
                             </View>
-                        )) : (
-                            <View style={styles.notFound}>
+                            ):(<View style={styles.notFound}>
                                 {this.props.searchableError()}
-                            </View>
-                        )}
-                    </ScrollView>
+                            </View>)
+                        }
+                        data={dropdownItems}
+                    />
+
                 </View>
             </View>
         );
